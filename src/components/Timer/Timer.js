@@ -3,12 +3,15 @@ import CounterButtons from '../CounterButtons/CounterButtons'
 import TimerButtons from '../TimerButtons/TimerButtons'
 import React, {useEffect, useState} from "react";
 import Time from '../Time/Time'
-let counter = null
+import styles from './Timer.module.scss'
 
 const Timer = () => {
+  const [showCounter, setShowCounter] = useState(true)
+  const [showTimer, setShowTimer] = useState(false)
 
   const [time, setTime] = useState(0);
   const [start, setStart] = useState(false);
+  const [buttonText, setButtonText] = useState(true);
 
   const [count, setCount] = useState(0);
   const [countdown, setCountdown] = useState(false);
@@ -25,37 +28,31 @@ const Timer = () => {
     } return () => clearInterval(timer)
   }, [start])
 
-  useEffect(() => {
-    if (count < 0) {
-      clearInterval(counter)
-      setCountdown(false);
-      setCount(0);
-    }
-  //console.log('counter', counter)
-  }, [countdown, count])
-
-  const timerStart = () => {
-    setCountdown(true);
-    counter = setInterval(() => {
-      setCount(previousTime => previousTime - 10)}, 10)
+  const showHide = () => {
+    setShowCounter(!showCounter);
+    setShowTimer(!showTimer)
+    setButtonText(!buttonText)
   }
+
+  useEffect(() => {
+    console.log('changed')
+  }, [showCounter, showTimer, buttonText])
+
   return (
-    <div>
-    <div>
-    <TimerButtons
-    setTime={setTime}
-    setStart={setStart}
-    />
-
-    <CounterButtons
-    setCountdown={setCountdown}
-    setCount={setCount}
-    counter={counter}
-    />
-
-    </div>
-    <Time time={time} />
-    <Time time={count} />
+    <div className={styles.timer}>
+      {showTimer? <Time time={time} /> :null}
+      {showCounter? <Time time={count} /> :null}
+      <div>
+        {showTimer? <TimerButtons setTime={setTime} setStart={setStart}/> :null}
+        {showCounter? <CounterButtons
+            setCountdown={setCountdown}
+            setCount={setCount}
+            count={count}
+        />:null}
+      <Button action={showHide}>
+        {buttonText?'Stopwatch':'Countown Timer'}
+      </Button>
+      </div>
     </div>
   );
 
